@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tanmay Mare | FPGA & RTL Design</title>
     <style>
         :root {
@@ -26,7 +26,7 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             line-height: 1.6;
-            overflow: hidden; /* Prevents scrolling on the main body */
+            overflow: hidden; 
         }
 
         /* 1. Engineering Grid Background */
@@ -43,7 +43,7 @@
             z-index: -3;
         }
 
-        /* 2. Interactive Cursor Glow */
+        /* 2. Interactive Cursor Glow (Hidden on Mobile) */
         #cursor-glow {
             position: fixed;
             top: 50%;
@@ -74,7 +74,7 @@
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(6, 9, 14, 0.9);
+            background: rgba(6, 9, 14, 0.95);
             backdrop-filter: blur(12px);
             z-index: 1000;
             display: flex;
@@ -91,6 +91,17 @@
             text-decoration: none;
             font-family: monospace;
             cursor: pointer;
+            z-index: 1001;
+        }
+
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            font-size: 1.8rem;
+            cursor: pointer;
+            z-index: 1001;
         }
 
         .nav-links {
@@ -118,10 +129,11 @@
 
         /* Multi-Page System */
         #main-content {
-            margin-top: 80px;
-            height: calc(100vh - 80px);
+            margin-top: 70px;
+            height: calc(100vh - 70px);
             overflow-y: auto;
             position: relative;
+            scroll-behavior: smooth;
         }
 
         .page {
@@ -225,7 +237,7 @@
         /* Grid & Cards */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2rem;
         }
 
@@ -300,6 +312,7 @@
             transition: all 0.3s;
             min-width: 120px;
             text-align: center;
+            flex-grow: 1; /* Helps tags look better on small screens */
         }
 
         .tag:hover {
@@ -314,6 +327,63 @@
         ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--accent-color); }
 
+        /* =========================================
+           MOBILE OPTIMIZATION (Media Queries)
+           ========================================= */
+        @media (max-width: 768px) {
+            h1 { font-size: 3.2rem; }
+            .subtitle { font-size: 0.95rem; padding: 0.5rem 1rem; }
+            .section-title { font-size: 1.8rem; margin-bottom: 2rem; }
+            
+            /* Disable Cursor Glow for touch devices */
+            #cursor-glow { display: none !important; }
+
+            /* Mobile Navigation Menu */
+            .hamburger { display: block; }
+            
+            .nav-links {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                background: rgba(6, 9, 14, 0.98);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 2rem;
+                transform: translateY(-100%);
+                opacity: 0;
+                pointer-events: none;
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .nav-links.open {
+                transform: translateY(0);
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            .nav-links button {
+                font-size: 1.5rem;
+                padding: 1rem;
+            }
+
+            /* Adjust Cards & Text for Mobile */
+            .page { padding: 2rem 5%; }
+            .about-text { font-size: 1rem; padding: 1.5rem; }
+            .card { padding: 1.5rem; }
+            
+            .contact-links {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .contact-links a { margin: 0; }
+            
+            .grid { grid-template-columns: 1fr; }
+        }
+
     </style>
 </head>
 <body>
@@ -324,7 +394,8 @@
 
     <nav>
         <div class="nav-brand" onclick="navigateTo('home')">TM_RTL</div>
-        <ul class="nav-links">
+        <button class="hamburger" id="hamburger-btn">☰</button>
+        <ul class="nav-links" id="nav-links">
             <li><button onclick="navigateTo('about')" id="nav-about">About</button></li>
             <li><button onclick="navigateTo('skills')" id="nav-skills">Skills</button></li>
             <li><button onclick="navigateTo('projects')" id="nav-projects">Projects</button></li>
@@ -419,17 +490,23 @@
     </div>
 
     <script>
-        // --- 1. Multi-Page Navigation Logic ---
+        // --- Mobile Menu Toggle ---
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const navLinksMenu = document.getElementById('nav-links');
+
+        hamburgerBtn.addEventListener('click', () => {
+            navLinksMenu.classList.toggle('open');
+            hamburgerBtn.innerText = navLinksMenu.classList.contains('open') ? '✕' : '☰';
+        });
+
+        // --- Multi-Page Navigation Logic ---
         function navigateTo(pageId) {
-            // Hide all pages
             document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active');
             });
             
-            // Show target page
             document.getElementById(pageId).classList.add('active');
 
-            // Update active state on nav buttons
             document.querySelectorAll('.nav-links button').forEach(btn => {
                 btn.classList.remove('active-link');
             });
@@ -439,18 +516,25 @@
                 activeBtn.classList.add('active-link');
             }
 
-            // Scroll container back to top when switching pages
             document.getElementById('main-content').scrollTop = 0;
+
+            // Close mobile menu if open
+            if(navLinksMenu.classList.contains('open')) {
+                navLinksMenu.classList.remove('open');
+                hamburgerBtn.innerText = '☰';
+            }
         }
 
-        // --- 2. Interactive Cursor Glow ---
+        // --- Interactive Cursor Glow (Desktop Only) ---
         const glow = document.getElementById('cursor-glow');
-        document.addEventListener('mousemove', (e) => {
-            glow.style.left = e.clientX + 'px';
-            glow.style.top = e.clientY + 'px';
-        });
+        if (window.innerWidth > 768) {
+            document.addEventListener('mousemove', (e) => {
+                glow.style.left = e.clientX + 'px';
+                glow.style.top = e.clientY + 'px';
+            });
+        }
 
-        // --- 3. Terminal Typewriter Effect ---
+        // --- Terminal Typewriter Effect ---
         const text = "> ./run_simulation -target Artix7 -module Tanmay_Mare";
         let index = 0;
         
@@ -463,7 +547,7 @@
         }
         setTimeout(typeWriter, 800);
 
-        // --- 4. Binary Decrypt Hover Effect for Tags ---
+        // --- Binary Decrypt Hover Effect for Tags ---
         const letters = "01";
         document.querySelectorAll('.tag').forEach(tag => {
             tag.addEventListener('mouseover', event => {
@@ -490,7 +574,7 @@
             });
         });
 
-        // --- 5. RTL Waveform Canvas Background ---
+        // --- RTL Waveform Canvas Background ---
         const canvas = document.getElementById('waveformCanvas');
         const ctx = canvas.getContext('2d');
         let width = canvas.width = window.innerWidth;
