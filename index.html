@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tanmay Mare | FPGA & RTL Design</title>
     <style>
-        /* --- SYSTEM VARIABLES (Dark Cyberpunk / Cyan Terminal Theme) --- */
+        /* --- SYSTEM VARIABLES --- */
         :root {
-            --bg-color: #030508;       /* Deepest Black */
-            --surface-color: #0a0e14;  /* Very Dark Panel */
+            --bg-color: #030508;       
+            --surface-color: #0a0e14;  
             --text-main: #c9d1d9;      
-            --text-muted: #6e7681;     /* Darker muted text for contrast */
-            --accent-color: #00f0ff;   /* Electric Cyan */
+            --text-muted: #6e7681;     
+            --accent-color: #00f0ff;   
             --accent-glow: rgba(0, 240, 255, 0.25);
             --grid-color: rgba(0, 240, 255, 0.03);
             --border-color: #1f2937;
@@ -28,8 +28,50 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             line-height: 1.6;
-            overflow: hidden; 
+            overflow: hidden; /* Prevents scroll during boot */
         }
+
+        /* --- BOOT SCREEN OVERLAY --- */
+        #boot-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #000000;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 5%;
+            transition: opacity 0.8s ease-out;
+        }
+
+        #boot-btn {
+            background: none;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px var(--accent-glow);
+            transition: all 0.2s;
+            align-self: center;
+        }
+
+        #boot-btn:hover { background: var(--accent-glow); }
+        
+        #boot-console {
+            color: var(--accent-color);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            display: none;
+        }
+
+        .hide-boot { opacity: 0; pointer-events: none; }
+
+        /* Main UI Elements (Hidden initially) */
+        #ui-wrapper { opacity: 0; transition: opacity 1s ease-in; }
+        .show-ui { opacity: 1 !important; }
 
         /* --- CRT SCANLINE EFFECT --- */
         body::after {
@@ -43,13 +85,10 @@
             pointer-events: none;
         }
 
-        /* 1. Engineering Grid Background */
+        /* Backgrounds */
         .background-grid {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            top: 0; left: 0; width: 100vw; height: 100vh;
             background-image: 
                 linear-gradient(var(--grid-color) 1px, transparent 1px),
                 linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
@@ -57,13 +96,9 @@
             z-index: -3;
         }
 
-        /* 2. Interactive Cursor Glow (Hidden on Mobile) */
         #cursor-glow {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            width: 600px;
-            height: 600px;
+            top: 50%; left: 50%; width: 600px; height: 600px;
             background: radial-gradient(circle, rgba(0, 240, 255, 0.06) 0%, rgba(0,0,0,0) 70%);
             border-radius: 50%;
             transform: translate(-50%, -50%);
@@ -74,27 +109,21 @@
 
         #waveformCanvas {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.5;
-            pointer-events: none;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; opacity: 0.5; pointer-events: none;
         }
 
         /* Navigation */
         nav {
             position: fixed;
-            top: 0;
-            width: 100%;
+            top: 0; width: 100%;
             background: rgba(3, 5, 8, 0.95);
             backdrop-filter: blur(12px);
             z-index: 1000;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.2rem 5%;
+            padding: 1rem 5%;
             border-bottom: 1px solid var(--border-color);
         }
 
@@ -102,426 +131,296 @@
             font-size: 1.3rem;
             color: var(--accent-color);
             font-weight: bold;
-            text-decoration: none;
             cursor: pointer;
             z-index: 1001;
             text-shadow: 0 0 5px var(--accent-glow);
         }
 
-        .hamburger {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--accent-color);
-            font-size: 1.8rem;
-            cursor: pointer;
-            z-index: 1001;
-        }
+        .hamburger { display: none; background: none; border: none; color: var(--accent-color); font-size: 1.8rem; cursor: pointer; z-index: 1001; }
 
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
         .nav-links button {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: color 0.3s, text-shadow 0.3s;
-            padding: 0.5rem;
-            font-weight: bold;
+            background: none; border: none; color: var(--text-muted);
+            font-size: 0.9rem; cursor: pointer; text-transform: uppercase;
+            font-weight: bold; transition: color 0.3s, text-shadow 0.3s;
         }
-
-        .nav-links button:hover, .nav-links button.active-link {
-            color: var(--accent-color);
-            text-shadow: 0 0 8px var(--accent-glow);
-        }
+        .nav-links button:hover, .nav-links button.active-link { color: var(--accent-color); text-shadow: 0 0 8px var(--accent-glow); }
 
         /* Multi-Page System */
-        #main-content {
-            margin-top: 70px;
-            height: calc(100vh - 70px);
-            overflow-y: auto;
-            position: relative;
-            scroll-behavior: smooth;
-        }
+        #main-content { margin-top: 70px; height: calc(100vh - 70px); overflow-y: auto; scroll-behavior: smooth; }
+        .page { display: none; padding: 4rem 5%; max-width: 1000px; margin: 0 auto; animation: fadeIn 0.4s ease-out forwards; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        .page {
-            display: none;
-            padding: 4rem 5%;
-            max-width: 1000px;
-            margin: 0 auto;
-            animation: fadeIn 0.4s ease-out forwards;
-        }
+        /* Animations */
+        .cursor { display: inline-block; width: 12px; height: 1.2em; background-color: var(--accent-color); animation: blink 1s infinite; vertical-align: middle; margin-left: 5px; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        .page.active {
-            display: block;
-        }
+        .sys-status { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
+        .status-light { display: inline-block; width: 8px; height: 8px; background-color: var(--accent-color); border-radius: 50%; margin-right: 8px; box-shadow: 0 0 8px var(--accent-color); }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Blinking Cursor & Status Animations */
-        .cursor {
-            display: inline-block;
-            width: 12px;
-            height: 1.2em;
-            background-color: var(--accent-color);
-            animation: blink 1s infinite;
-            vertical-align: middle;
-            margin-left: 5px;
-        }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
-
-        .sys-status {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-            display: block;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 5px;
-        }
-
-        .status-light {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background-color: var(--accent-color);
-            border-radius: 50%;
-            margin-right: 8px;
-            box-shadow: 0 0 8px var(--accent-color);
-            vertical-align: middle;
-        }
-
-        /* Home Page Specifics */
-        #home {
-            height: 100%;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding-bottom: 10vh;
-        }
-
+        /* Home Page */
+        #home { height: 100%; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding-bottom: 10vh; }
         #home.active { display: flex; }
-
-        h1 {
-            font-size: 4.5rem;
-            color: #ffffff;
-            margin-bottom: 0.5rem;
-            letter-spacing: -1px;
-            text-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+        h1 { font-size: 4.5rem; color: #ffffff; margin-bottom: 0.5rem; letter-spacing: -1px; text-shadow: 0 0 15px rgba(0, 240, 255, 0.2); }
+        .subtitle { font-size: 1.1rem; color: var(--accent-color); margin-bottom: 2.5rem; min-height: 1.5em; background: var(--surface-color); padding: 0.6rem 1.2rem; border: 1px dashed var(--border-color); }
+        
+        .contact-links { background: var(--surface-color); padding: 1.2rem; border: 1px solid var(--border-color); }
+        .contact-links button, .contact-links a { 
+            background: none; border: none; color: var(--text-muted); font-size: 1rem;
+            text-decoration: none; margin: 0 1rem; cursor: pointer; border-bottom: 1px dotted var(--border-color); transition: all 0.3s;
         }
-
-        .subtitle {
-            font-size: 1.1rem;
-            color: var(--accent-color);
-            margin-bottom: 2.5rem;
-            min-height: 1.5em;
-            background: var(--surface-color);
-            padding: 0.6rem 1.2rem;
-            border-radius: 2px;
-            border: 1px dashed var(--border-color);
-        }
-
-        .contact-links {
-            background: var(--surface-color);
-            padding: 1.2rem;
-            border-radius: 2px;
-            border: 1px solid var(--border-color);
-        }
-
-        .contact-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            margin: 0 1rem;
-            transition: all 0.3s;
-            border-bottom: 1px dotted var(--border-color);
-        }
-
-        .contact-links a:hover {
-            color: var(--accent-color);
-            border-bottom-style: solid;
-            text-shadow: 0 0 8px var(--accent-glow);
-        }
+        .contact-links button:hover, .contact-links a:hover { color: var(--accent-color); border-bottom-style: solid; text-shadow: 0 0 8px var(--accent-glow); }
 
         /* General Sections */
-        .section-title {
-            font-size: 1.8rem;
-            margin-bottom: 3rem;
-            color: var(--accent-color);
-            border-bottom: 1px dashed var(--border-color);
-            padding-bottom: 0.5rem;
-            display: inline-block;
-            text-transform: uppercase;
-        }
+        .section-title { font-size: 1.8rem; margin-bottom: 3rem; color: var(--accent-color); border-bottom: 1px dashed var(--border-color); padding-bottom: 0.5rem; display: inline-block; text-transform: uppercase; }
+        .about-text { font-size: 1.1rem; line-height: 1.8; background: var(--surface-color); padding: 2rem; border: 1px solid var(--border-color); border-left: 3px solid var(--accent-color); }
 
-        .about-text {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: var(--text-main);
-            background: var(--surface-color);
-            padding: 2rem;
-            border: 1px solid var(--border-color);
-            border-left: 3px solid var(--accent-color);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        /* Grid & Cards (Retro Styled) */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-
-        .card {
-            background-color: var(--surface-color);
-            padding: 2rem;
-            border: 1px solid var(--border-color);
-            transition: all 0.2s ease;
-            position: relative;
-        }
-
-        /* Cyan Accent Bar on Left */
-        .card::before {
-            content: "";
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 3px;
-            background-color: var(--border-color);
-            transition: 0.2s;
-        }
-
-        .card:hover {
-            border-color: rgba(0, 240, 255, 0.4);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.6);
-        }
-
-        .card:hover::before {
-            background-color: var(--accent-color);
-            box-shadow: 0 0 10px var(--accent-glow);
-        }
-
-        .card h3 {
-            color: #ffffff;
-            margin-bottom: 0.5rem;
-            font-size: 1.2rem;
-            letter-spacing: -0.5px;
-        }
-
-        .date {
-            color: var(--accent-color);
-            font-size: 0.85rem;
-            display: inline-block;
-            margin-bottom: 1.5rem;
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            padding: 2px 6px;
-            font-weight: bold;
-        }
-
-        ul {
-            padding-left: 1.2rem;
-            color: var(--text-muted);
-            list-style-type: square;
-        }
-
-        li { margin-bottom: 0.8rem; }
-        
-        li strong { color: var(--text-main); }
+        /* Grid & Cards */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
+        .card { background-color: var(--surface-color); padding: 2rem; border: 1px solid var(--border-color); position: relative; transition: all 0.2s; }
+        .card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background-color: var(--border-color); transition: 0.2s; }
+        .card:hover { border-color: rgba(0, 240, 255, 0.4); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.6); }
+        .card:hover::before { background-color: var(--accent-color); box-shadow: 0 0 10px var(--accent-glow); }
+        .card h3 { color: #ffffff; margin-bottom: 0.5rem; font-size: 1.2rem; }
+        .date { color: var(--accent-color); font-size: 0.85rem; display: inline-block; margin-bottom: 1.5rem; background: var(--bg-color); border: 1px solid var(--border-color); padding: 2px 6px; font-weight: bold; }
+        ul { padding-left: 1.2rem; color: var(--text-muted); list-style-type: square; }
+        li { margin-bottom: 0.8rem; } li strong { color: var(--text-main); }
 
         /* Tags */
-        .tags {
-            margin-top: 1.5rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-        }
+        .tags { margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.8rem; }
+        .tag { background: var(--surface-color); padding: 0.6rem 1rem; font-size: 0.9rem; color: var(--accent-color); border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s; text-align: center; flex-grow: 1; }
+        .tag:hover { background: rgba(0, 240, 255, 0.08); border-color: var(--accent-color); box-shadow: 0 0 8px var(--accent-glow); }
 
-        .tag {
-            background: var(--surface-color);
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-            color: var(--accent-color);
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
-            flex-grow: 1; 
-        }
-
-        .tag:hover {
-            background: rgba(0, 240, 255, 0.08);
-            border-color: var(--accent-color);
-            box-shadow: 0 0 8px var(--accent-glow);
-        }
-
-        /* Scrollbar Styling */
-        ::-webkit-scrollbar { width: 8px; }
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-color); }
-        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 0px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent-color); }
+        ::-webkit-scrollbar-thumb { background: #1f2937; }
 
         /* =========================================
-           MOBILE OPTIMIZATION (Media Queries)
+           MOBILE OPTIMIZATION (Tighter Layout)
            ========================================= */
         @media (max-width: 768px) {
-            h1 { font-size: 2.8rem; }
+            h1 { font-size: 2.5rem; }
             .subtitle { font-size: 0.9rem; padding: 0.5rem; }
-            .section-title { font-size: 1.5rem; margin-bottom: 2rem; }
-            
+            .section-title { font-size: 1.4rem; margin-bottom: 1.5rem; }
             #cursor-glow { display: none !important; }
 
-            /* Mobile Navigation Menu */
             .hamburger { display: block; }
-            
             .nav-links {
-                position: fixed;
-                top: 0; left: 0; width: 100%; height: 100vh;
-                background: rgba(3, 5, 8, 0.98);
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                gap: 2rem;
-                transform: translateY(-100%);
-                opacity: 0;
-                pointer-events: none;
-                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+                background: rgba(3, 5, 8, 0.98); flex-direction: column; justify-content: center; align-items: center; gap: 2.5rem;
+                transform: translateY(-100%); opacity: 0; pointer-events: none; transition: all 0.4s ease;
             }
-
-            .nav-links.open {
-                transform: translateY(0);
-                opacity: 1;
-                pointer-events: auto;
-            }
-
-            .nav-links button { font-size: 1.5rem; padding: 1rem; }
-            .page { padding: 2rem 5%; }
-            .about-text { font-size: 1rem; padding: 1.5rem; }
-            .card { padding: 1.5rem; }
+            .nav-links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+            .nav-links button { font-size: 1.8rem; padding: 1rem; width: 100%; text-align: center; }
             
-            .contact-links { display: flex; flex-direction: column; gap: 1rem; }
-            .contact-links a { margin: 0; }
-            .grid { grid-template-columns: 1fr; }
+            /* Tighter Mobile Spacing */
+            .page { padding: 1.5rem 5%; }
+            .about-text { font-size: 0.95rem; padding: 1.2rem; }
+            .card { padding: 1.2rem; }
+            .grid { gap: 1rem; grid-template-columns: 1fr; }
+            
+            .contact-links { display: flex; flex-direction: column; gap: 1rem; width: 100%; }
+            .contact-links button, .contact-links a { margin: 0; padding: 10px; font-size: 1.1rem; border-bottom: 1px solid var(--border-color); }
+            
+            .tags { gap: 0.5rem; }
+            .tag { padding: 0.8rem; font-size: 0.85rem; }
         }
-
     </style>
 </head>
 <body>
 
-    <div class="background-grid"></div>
-    <div id="cursor-glow"></div>
-    <canvas id="waveformCanvas"></canvas>
+    <div id="boot-screen">
+        <button id="boot-btn">> INITIALIZE_SYSTEM</button>
+        <div id="boot-console"></div>
+    </div>
 
-    <nav>
-        <div class="nav-brand" onclick="navigateTo('home')">~/TM_RTL</div>
-        <button class="hamburger" id="hamburger-btn">☰</button>
-        <ul class="nav-links" id="nav-links">
-            <li><button onclick="navigateTo('about')" id="nav-about">About</button></li>
-            <li><button onclick="navigateTo('skills')" id="nav-skills">Skills</button></li>
-            <li><button onclick="navigateTo('projects')" id="nav-projects">Projects</button></li>
-            <li><button onclick="navigateTo('education')" id="nav-education">Education</button></li>
-        </ul>
-    </nav>
+    <div id="ui-wrapper">
+        <div class="background-grid"></div>
+        <div id="cursor-glow"></div>
+        <canvas id="waveformCanvas"></canvas>
 
-    <div id="main-content">
-        
-        <section id="home" class="page active">
-            <div class="sys-status"><span class="status-light"></span>SYSTEM ONLINE</div>
-            <h1>Tanmay Mare<span class="cursor"></span></h1>
-            <div class="subtitle" id="typewriter"></div>
-            <div class="contact-links">
-                <a href="mailto:tanmaymare18@gmail.com?subject=Portfolio%20Inquiry:%20Let's%20Connect!&body=Hi%20Tanmay,%0D%0A%0D%0AI%20came%20across%20your%20FPGA%20portfolio%20and%20wanted%20to%20reach%20out%20regarding...">/CMD: Email</a>
-                <a href="https://linkedin.com/in/tanmay-mare-fpga/" target="_blank">/CMD: LinkedIn</a>
-                <a href="https://github.com/tanmaymare" target="_blank">/CMD: GitHub</a>
-                <span>[Loc: Pune, IN]</span>
-            </div>
-        </section>
+        <nav>
+            <div class="nav-brand" onclick="navigateTo('home')">~/TM_RTL</div>
+            <button class="hamburger" id="hamburger-btn">☰</button>
+            <ul class="nav-links" id="nav-links">
+                <li><button onclick="navigateTo('about')" id="nav-about">About</button></li>
+                <li><button onclick="navigateTo('skills')" id="nav-skills">Skills</button></li>
+                <li><button onclick="navigateTo('projects')" id="nav-projects">Projects</button></li>
+                <li><button onclick="navigateTo('education')" id="nav-education">Education</button></li>
+            </ul>
+        </nav>
 
-        <section id="about" class="page">
-            <h2 class="section-title">// PROFILE_SUMMARY</h2>
-            <div class="about-text">
-                Hardware-focused E&TC Engineering student specializing in RTL design, hardware acceleration, and mixed-signal integration. Proven ability to take Verilog designs from simulation to physical synthesis on Artix-7 FPGAs, achieving highly optimized processing latencies. Actively transitioning to System Verilog and Zynq SoC integration, seeking early-career roles in Digital Design and FPGA prototyping. When I am not running full system timing analysis, I am highly active in endurance sports, training six days a week to eventually run full marathons.
-            </div>
-        </section>
-
-        <section id="skills" class="page">
-            <h2 class="section-title">// SKILLS_&_TOOLS</h2>
-            <div class="tags">
-                <span class="tag" data-text="Verilog & VHDL">Verilog & VHDL</span>
-                <span class="tag" data-text="FPGA Implementation">FPGA Implementation</span>
-                <span class="tag" data-text="Mixed-Signal">Mixed-Signal</span>
-                <span class="tag" data-text="Xilinx Vivado">Xilinx Vivado</span>
-                <span class="tag" data-text="Icarus Verilog">Icarus Verilog</span>
-                <span class="tag" data-text="GTKWave">GTKWave</span>
-                <span class="tag" data-text="Basys 3 (Artix-7)">Basys 3 (Artix-7)</span>
-                <span class="tag" data-text="STM32 & ARM 7">STM32 & ARM 7</span>
-                <span class="tag" data-text="I2C / SPI / UART">I2C / SPI / UART</span>
-            </div>
-        </section>
-
-        <section id="projects" class="page">
-            <h2 class="section-title">// PROJECT_LOGS</h2>
-            <div class="grid">
-                <div class="card">
-                    <h3>FPGA Real-Time Fault Detection System</h3>
-                    <span class="date">07/2025 - Present</span>
-                    <ul>
-                        <li>Engineering an open-source real-time fault detection module and protection mechanism for power grids using Verilog HDL.</li>
-                        <li>Designed core logic using FSMs and interfaced Basys 3 FPGA peripherals, including an LCD module and MCP3008 ADC.</li>
-                        <li>Debugged RTL via comprehensive simulations, completing full system timing analysis to achieve a processing latency of ~25us.</li>
-                    </ul>
+        <div id="main-content">
+            <section id="home" class="page active">
+                <div class="sys-status"><span class="status-light"></span>SYSTEM ONLINE</div>
+                <h1>Tanmay Mare<span class="cursor"></span></h1>
+                <div class="subtitle" id="typewriter"></div>
+                <div class="contact-links">
+                    <button onclick="handleEmailClick()">/CMD: Email</button>
+                    <a href="https://linkedin.com/in/tanmay-mare-fpga/" target="_blank">/CMD: LinkedIn</a>
+                    <a href="https://github.com/tanmaymare" target="_blank">/CMD: GitHub</a>
+                    <span style="color:var(--text-muted); display:inline-block; margin: 0 1rem;">[Loc: Pune, IN]</span>
                 </div>
+            </section>
 
-                <div class="card">
-                    <h3>Digital IP Library Development</h3>
-                    <span class="date">07/2025 - Present</span>
-                    <ul>
-                        <li>Designed and synthesized foundational digital IPs (logic gates, counters, adders, MUXes, FSMs) in Verilog for the Artix-7 architecture.</li>
-                        <li>Developed comprehensive test benches for functional verification.</li>
-                        <li>Documented simulation waveforms and RTL elaboration schematics.</li>
-                    </ul>
+            <section id="about" class="page">
+                <h2 class="section-title">// PROFILE_SUMMARY</h2>
+                <div class="about-text">
+                    Hardware-focused E&TC Engineering student specializing in RTL design, hardware acceleration, and mixed-signal integration. Proven ability to take Verilog designs from simulation to physical synthesis on Artix-7 FPGAs, achieving highly optimized processing latencies. Actively transitioning to System Verilog and Zynq SoC integration, seeking early-career roles in Digital Design and FPGA prototyping. When I am not running full system timing analysis, I am highly active in endurance sports, training six days a week to eventually run full marathons.
                 </div>
+            </section>
 
-                <div class="card">
-                    <h3>Bipolar Disorder Diagnostic Tool Prototype</h3>
-                    <span class="date">10/2023 - 07/2024</span>
-                    <ul>
-                        <li>Designed a mixed-signal data acquisition prototype interfacing an AD8232 analog ECG sensor with an ESP8266 microcontroller.</li>
-                        <li>Processed raw analog sensor inputs into digital metrics to isolate Heart Rate Variability (HRV).</li>
-                    </ul>
+            <section id="skills" class="page">
+                <h2 class="section-title">// SKILLS_&_TOOLS</h2>
+                <div class="tags">
+                    <span class="tag" data-text="Verilog & VHDL">Verilog & VHDL</span>
+                    <span class="tag" data-text="FPGA Implementation">FPGA Implementation</span>
+                    <span class="tag" data-text="Mixed-Signal">Mixed-Signal</span>
+                    <span class="tag" data-text="Xilinx Vivado">Xilinx Vivado</span>
+                    <span class="tag" data-text="Icarus Verilog">Icarus Verilog</span>
+                    <span class="tag" data-text="GTKWave">GTKWave</span>
+                    <span class="tag" data-text="Basys 3 (Artix-7)">Basys 3 (Artix-7)</span>
+                    <span class="tag" data-text="STM32 & ARM 7">STM32 & ARM 7</span>
+                    <span class="tag" data-text="I2C / SPI / UART">I2C / SPI / UART</span>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <section id="education" class="page" style="margin-bottom: 5rem;">
-            <h2 class="section-title">// EDUCATION_&_CERTS</h2>
-            <div class="card" style="margin-bottom: 2rem;">
-                <h3>Bachelor of Engineering (E&TC)</h3>
-                <span class="date">Class of 2026</span>
-                <p style="color: var(--text-muted); margin-top: 10px;">Pune Vidyarthi Griha's College of Engineering, Technology & Management.</p>
-            </div>
-            <div class="tags">
-                <span class="tag" data-text="NPTEL: System Design Through Verilog">NPTEL: System Design Through Verilog</span>
-                <span class="tag" data-text="NPTEL: Hardware Modelling">NPTEL: Hardware Modelling</span>
-                <span class="tag" data-text="NPTEL: CMOS Digital VLSI">NPTEL: CMOS Digital VLSI</span>
-                <span class="tag" data-text="Udemy: Verilog HDL">Udemy: Verilog HDL</span>
-            </div>
-        </section>
+            <section id="projects" class="page">
+                <h2 class="section-title">// PROJECT_LOGS</h2>
+                <div class="grid">
+                    <div class="card">
+                        <h3>FPGA Real-Time Fault Detection System</h3>
+                        <span class="date">07/2025 - Present</span>
+                        <ul>
+                            <li>Engineering an open-source real-time fault detection module and protection mechanism for power grids using Verilog HDL.</li>
+                            <li>Designed core logic using FSMs and interfaced Basys 3 FPGA peripherals, including an LCD module and MCP3008 ADC.</li>
+                            <li>Debugged RTL via comprehensive simulations, completing full system timing analysis to achieve a processing latency of ~25us.</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>Digital IP Library Development</h3>
+                        <span class="date">07/2025 - Present</span>
+                        <ul>
+                            <li>Designed and synthesized foundational digital IPs (logic gates, counters, adders, MUXes, FSMs) in Verilog for the Artix-7 architecture.</li>
+                            <li>Developed comprehensive test benches for functional verification.</li>
+                            <li>Documented simulation waveforms and RTL elaboration schematics.</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>Bipolar Disorder Diagnostic Tool Prototype</h3>
+                        <span class="date">10/2023 - 07/2024</span>
+                        <ul>
+                            <li>Designed a mixed-signal data acquisition prototype interfacing an AD8232 analog ECG sensor with an ESP8266 microcontroller.</li>
+                            <li>Processed raw analog sensor inputs into digital metrics to isolate Heart Rate Variability (HRV).</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
 
+            <section id="education" class="page" style="margin-bottom: 5rem;">
+                <h2 class="section-title">// EDUCATION_&_CERTS</h2>
+                <div class="card" style="margin-bottom: 2rem;">
+                    <h3>Bachelor of Engineering (E&TC)</h3>
+                    <span class="date">Class of 2026</span>
+                    <p style="color: var(--text-muted); margin-top: 5px;">Pune Vidyarthi Griha's College of Engineering, Technology & Management.</p>
+                </div>
+                <div class="tags">
+                    <span class="tag" data-text="NPTEL: System Design Through Verilog">NPTEL: System Design Through Verilog</span>
+                    <span class="tag" data-text="NPTEL: Hardware Modelling">NPTEL: Hardware Modelling</span>
+                    <span class="tag" data-text="NPTEL: CMOS Digital VLSI">NPTEL: CMOS Digital VLSI</span>
+                    <span class="tag" data-text="Udemy: Verilog HDL">Udemy: Verilog HDL</span>
+                </div>
+            </section>
+        </div>
     </div>
 
     <script>
-        // --- Mobile Menu Toggle ---
+        /* ==========================================
+           1. SMART EMAIL ROUTING LOGIC
+           ========================================== */
+        function handleEmailClick() {
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            const email = "tanmaymare18@gmail.com";
+            const subject = "Portfolio Inquiry: Let's Connect!";
+            const body = "Hi Tanmay,\n\nI came across your FPGA portfolio and wanted to reach out regarding...";
+            
+            if (isMobile) {
+                // Opens default Mail App on phones
+                window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            } else {
+                // Force opens Gmail in Web Browser for PC users so it doesn't fail
+                window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
+            }
+        }
+
+        /* ==========================================
+           2. SYSTEM BOOT SEQUENCE & WEB AUDIO API
+           ========================================== */
+        const bootBtn = document.getElementById('boot-btn');
+        const bootConsole = document.getElementById('boot-console');
+        const bootScreen = document.getElementById('boot-screen');
+        const uiWrapper = document.getElementById('ui-wrapper');
+
+        const bootLines = [
+            "> BIOS Date 04/27/26 16:59:10 Ver 2.0.0",
+            "> CPU: High-Performance Architecture",
+            "> Memory Testing: 32768M OK",
+            "> Loading RTL modules........ [OK]",
+            "> Parsing Verilog Constraints.... [OK]",
+            "> Configuring Artix-7 FPGA....... [OK]",
+            "> Establishing Secure Connection. [OK]",
+            "> SYSTEM ONLINE."
+        ];
+
+        // Synthesize a futuristic boot beep
+        function playBootBeep() {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.1);
+            
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        }
+
+        bootBtn.addEventListener('click', () => {
+            bootBtn.style.display = 'none';
+            bootConsole.style.display = 'block';
+            playBootBeep();
+
+            let lineIndex = 0;
+            const bootInterval = setInterval(() => {
+                if (lineIndex < bootLines.length) {
+                    bootConsole.innerHTML += bootLines[lineIndex] + "<br>";
+                    lineIndex++;
+                } else {
+                    clearInterval(bootInterval);
+                    setTimeout(() => {
+                        bootScreen.classList.add('hide-boot');
+                        setTimeout(() => {
+                            bootScreen.style.display = 'none';
+                            uiWrapper.classList.add('show-ui');
+                            document.body.style.overflow = 'auto'; // Re-enable scrolling
+                            startTypewriter(); // Start the subtitle animation
+                        }, 800);
+                    }, 500);
+                }
+            }, 150); // Speed of text printing
+        });
+
+        /* ==========================================
+           3. UI INTERACTIONS & NAVIGATION
+           ========================================== */
         const hamburgerBtn = document.getElementById('hamburger-btn');
         const navLinksMenu = document.getElementById('nav-links');
 
@@ -530,22 +429,13 @@
             hamburgerBtn.innerText = navLinksMenu.classList.contains('open') ? '✕' : '☰';
         });
 
-        // --- Multi-Page Navigation Logic ---
         function navigateTo(pageId) {
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
-
-            document.querySelectorAll('.nav-links button').forEach(btn => {
-                btn.classList.remove('active-link');
-            });
             
+            document.querySelectorAll('.nav-links button').forEach(btn => btn.classList.remove('active-link'));
             let activeBtn = document.getElementById('nav-' + pageId);
-            if(activeBtn) {
-                activeBtn.classList.add('active-link');
-            }
+            if(activeBtn) activeBtn.classList.add('active-link');
 
             document.getElementById('main-content').scrollTop = 0;
 
@@ -555,7 +445,6 @@
             }
         }
 
-        // --- Interactive Cursor Glow (Desktop Only) ---
         const glow = document.getElementById('cursor-glow');
         if (window.innerWidth > 768) {
             document.addEventListener('mousemove', (e) => {
@@ -564,47 +453,39 @@
             });
         }
 
-        // --- Terminal Typewriter Effect ---
-        const text = "> ./run_simulation -target Artix7 -module Tanmay_Mare";
-        let index = 0;
-        
-        function typeWriter() {
-            if (index < text.length) {
-                document.getElementById("typewriter").innerHTML += text.charAt(index);
-                index++;
-                setTimeout(typeWriter, 50);
+        function startTypewriter() {
+            const text = "> ./run_simulation -target Artix7 -module Tanmay_Mare";
+            let index = 0;
+            function typeWriter() {
+                if (index < text.length) {
+                    document.getElementById("typewriter").innerHTML += text.charAt(index);
+                    index++;
+                    setTimeout(typeWriter, 40);
+                }
             }
+            setTimeout(typeWriter, 500);
         }
-        setTimeout(typeWriter, 800);
 
-        // --- Binary Decrypt Hover Effect for Tags ---
+        // Binary Decrypt Hover Effect
         const letters = "01";
         document.querySelectorAll('.tag').forEach(tag => {
             tag.addEventListener('mouseover', event => {
                 let iterations = 0;
                 const originalText = event.target.dataset.text;
-                
                 clearInterval(tag.interval);
-                
                 tag.interval = setInterval(() => {
                     event.target.innerText = originalText.split("")
                         .map((letter, index) => {
-                            if(index < iterations) {
-                                return originalText[index];
-                            }
+                            if(index < iterations) return originalText[index];
                             return letters[Math.floor(Math.random() * 2)];
-                        })
-                        .join("");
-                    
-                    if(iterations >= originalText.length){ 
-                        clearInterval(tag.interval);
-                    }
+                        }).join("");
+                    if(iterations >= originalText.length) clearInterval(tag.interval);
                     iterations += 1 / 3; 
                 }, 30);
             });
         });
 
-        // --- RTL Waveform Canvas Background (Cyan) ---
+        // Background Waveform
         const canvas = document.getElementById('waveformCanvas');
         const ctx = canvas.getContext('2d');
         let width = canvas.width = window.innerWidth;
@@ -616,25 +497,21 @@
         });
 
         let offset = 0;
-        
         function drawWaveform() {
             ctx.clearRect(0, 0, width, height);
-            ctx.beginPath();
-            ctx.strokeStyle = 'rgba(0, 240, 255, 0.15)'; 
             ctx.lineWidth = 2;
-
             const yCenter = height / 2;
             const amplitude = 60;
             const period = 250;
 
             // Clock signal
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(0, 240, 255, 0.15)'; 
             for (let x = 0; x < width; x += 5) {
                 let val = Math.sin((x + offset) * (Math.PI * 2) / period);
                 let y = val > 0 ? yCenter - amplitude : yCenter + amplitude;
-                
-                if (x === 0) {
-                    ctx.moveTo(x, y);
-                } else {
+                if (x === 0) ctx.moveTo(x, y);
+                else {
                     let prevVal = Math.sin((x - 5 + offset) * (Math.PI * 2) / period);
                     if ((val > 0 && prevVal <= 0) || (val <= 0 && prevVal > 0)) {
                          ctx.lineTo(x, yCenter - amplitude);
@@ -666,7 +543,6 @@
             offset += 2;
             requestAnimationFrame(drawWaveform);
         }
-        
         drawWaveform();
     </script>
 </body>
