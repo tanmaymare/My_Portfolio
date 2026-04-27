@@ -5,23 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tanmay Mare | FPGA & RTL Design</title>
     <style>
-        /* --- SYSTEM VARIABLES (Retro Terminal Theme) --- */
+        /* --- SYSTEM VARIABLES (Dark Cyberpunk / Cyan Terminal Theme) --- */
         :root {
-            --bg-color: #0d1117;       
-            --surface-color: #161b22;  
+            --bg-color: #030508;       /* Deepest Black */
+            --surface-color: #0a0e14;  /* Very Dark Panel */
             --text-main: #c9d1d9;      
-            --text-muted: #8b949e;     
-            --accent-color: #3fb950;   /* Terminal Green */
-            --accent-glow: rgba(63, 185, 80, 0.2);
-            --grid-color: rgba(48, 54, 61, 0.3);
-            --border-color: #30363d;
+            --text-muted: #6e7681;     /* Darker muted text for contrast */
+            --accent-color: #00f0ff;   /* Electric Cyan */
+            --accent-glow: rgba(0, 240, 255, 0.25);
+            --grid-color: rgba(0, 240, 255, 0.03);
+            --border-color: #1f2937;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Courier New', Courier, monospace; /* Enforced Monospace */
+            font-family: 'Courier New', Courier, monospace;
         }
 
         body {
@@ -37,7 +37,7 @@
             display: block;
             position: fixed;
             top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
             background-size: 100% 2px;
             z-index: 9999;
             pointer-events: none;
@@ -64,7 +64,7 @@
             left: 50%;
             width: 600px;
             height: 600px;
-            background: radial-gradient(circle, rgba(63, 185, 80, 0.08) 0%, rgba(0,0,0,0) 70%);
+            background: radial-gradient(circle, rgba(0, 240, 255, 0.06) 0%, rgba(0,0,0,0) 70%);
             border-radius: 50%;
             transform: translate(-50%, -50%);
             pointer-events: none;
@@ -79,7 +79,7 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            opacity: 0.4;
+            opacity: 0.5;
             pointer-events: none;
         }
 
@@ -88,7 +88,7 @@
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(13, 17, 23, 0.95);
+            background: rgba(3, 5, 8, 0.95);
             backdrop-filter: blur(12px);
             z-index: 1000;
             display: flex;
@@ -215,10 +215,10 @@
 
         h1 {
             font-size: 4.5rem;
-            color: var(--text-main);
+            color: #ffffff;
             margin-bottom: 0.5rem;
             letter-spacing: -1px;
-            text-shadow: 0 0 10px rgba(201, 209, 217, 0.2);
+            text-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
         }
 
         .subtitle {
@@ -250,6 +250,7 @@
         .contact-links a:hover {
             color: var(--accent-color);
             border-bottom-style: solid;
+            text-shadow: 0 0 8px var(--accent-glow);
         }
 
         /* General Sections */
@@ -271,6 +272,7 @@
             padding: 2rem;
             border: 1px solid var(--border-color);
             border-left: 3px solid var(--accent-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         /* Grid & Cards (Retro Styled) */
@@ -288,7 +290,7 @@
             position: relative;
         }
 
-        /* Green Accent Bar on Left */
+        /* Cyan Accent Bar on Left */
         .card::before {
             content: "";
             position: absolute;
@@ -299,8 +301,9 @@
         }
 
         .card:hover {
-            border-color: var(--text-muted);
+            border-color: rgba(0, 240, 255, 0.4);
             transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.6);
         }
 
         .card:hover::before {
@@ -309,7 +312,7 @@
         }
 
         .card h3 {
-            color: var(--text-main);
+            color: #ffffff;
             margin-bottom: 0.5rem;
             font-size: 1.2rem;
             letter-spacing: -0.5px;
@@ -357,14 +360,15 @@
         }
 
         .tag:hover {
-            background: rgba(63, 185, 80, 0.1);
+            background: rgba(0, 240, 255, 0.08);
             border-color: var(--accent-color);
+            box-shadow: 0 0 8px var(--accent-glow);
         }
 
         /* Scrollbar Styling */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-color); }
-        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 0px; }
+        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 0px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--accent-color); }
 
         /* =========================================
@@ -383,7 +387,7 @@
             .nav-links {
                 position: fixed;
                 top: 0; left: 0; width: 100%; height: 100vh;
-                background: rgba(13, 17, 23, 0.98);
+                background: rgba(3, 5, 8, 0.98);
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
@@ -436,7 +440,7 @@
             <h1>Tanmay Mare<span class="cursor"></span></h1>
             <div class="subtitle" id="typewriter"></div>
             <div class="contact-links">
-                <a href="mailto:tanmaymare18@gmail.com">/CMD: Email</a>
+                <a href="mailto:tanmaymare18@gmail.com?subject=Portfolio%20Inquiry:%20Let's%20Connect!&body=Hi%20Tanmay,%0D%0A%0D%0AI%20came%20across%20your%20FPGA%20portfolio%20and%20wanted%20to%20reach%20out%20regarding...">/CMD: Email</a>
                 <a href="https://linkedin.com/in/tanmay-mare-fpga/" target="_blank">/CMD: LinkedIn</a>
                 <a href="https://github.com/tanmaymare" target="_blank">/CMD: GitHub</a>
                 <span>[Loc: Pune, IN]</span>
@@ -600,7 +604,7 @@
             });
         });
 
-        // --- RTL Waveform Canvas Background (Updated to Green) ---
+        // --- RTL Waveform Canvas Background (Cyan) ---
         const canvas = document.getElementById('waveformCanvas');
         const ctx = canvas.getContext('2d');
         let width = canvas.width = window.innerWidth;
@@ -616,7 +620,7 @@
         function drawWaveform() {
             ctx.clearRect(0, 0, width, height);
             ctx.beginPath();
-            ctx.strokeStyle = 'rgba(63, 185, 80, 0.15)'; // Terminal Green
+            ctx.strokeStyle = 'rgba(0, 240, 255, 0.15)'; 
             ctx.lineWidth = 2;
 
             const yCenter = height / 2;
@@ -643,7 +647,7 @@
             
             // Data signal
             ctx.beginPath();
-            ctx.strokeStyle = 'rgba(63, 185, 80, 0.08)'; // Dimmer Green
+            ctx.strokeStyle = 'rgba(0, 240, 255, 0.08)'; 
             for (let x = 0; x < width; x += 5) {
                 let val = Math.sin((x + offset * 1.5) * (Math.PI * 2) / (period * 0.7));
                 let y = val > 0.2 ? yCenter + 120 : yCenter + 170; 
