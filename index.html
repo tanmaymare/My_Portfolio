@@ -11,7 +11,7 @@
             --text-main: #c9d1d9;
             --text-muted: #8b949e;
             --accent-color: #00f0ff;
-            --accent-glow: rgba(0, 240, 255, 0.2);
+            --accent-glow: rgba(0, 240, 255, 0.15);
         }
 
         * {
@@ -21,6 +21,10 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
@@ -28,6 +32,49 @@
             overflow-x: hidden;
         }
 
+        /* Navigation Bar */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(22, 27, 34, 0.95);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .nav-brand {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            font-weight: bold;
+            text-decoration: none;
+            font-family: monospace;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+
+        /* Hero Section */
         header {
             min-height: 100vh;
             display: flex;
@@ -37,6 +84,7 @@
             text-align: center;
             padding: 2rem;
             background: radial-gradient(circle at center, var(--surface-color) 0%, var(--bg-color) 100%);
+            margin-top: 60px; /* Offset for navbar */
         }
 
         h1 {
@@ -47,10 +95,11 @@
         }
 
         .subtitle {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             color: var(--accent-color);
             font-family: monospace;
             margin-bottom: 2rem;
+            min-height: 1.5em; /* Prevents layout shift while typing */
         }
 
         .contact-links a {
@@ -66,14 +115,16 @@
             border-bottom: 1px dashed var(--accent-color);
         }
 
+        /* Main Sections */
         section {
-            padding: 5rem 10%;
+            padding: 5rem 5%;
             max-width: 1200px;
             margin: 0 auto;
+            scroll-margin-top: 80px; /* Prevents nav from covering titles */
         }
 
         .section-title {
-            font-size: 2.5rem;
+            font-size: 2rem;
             margin-bottom: 3rem;
             color: #ffffff;
             border-bottom: 2px solid var(--surface-color);
@@ -102,13 +153,14 @@
 
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px var(--accent-glow);
-            border-color: var(--accent-color);
+            box-shadow: 0 8px 24px var(--accent-glow);
+            border-color: #484f58;
         }
 
         .card h3 {
             color: var(--accent-color);
             margin-bottom: 1rem;
+            font-size: 1.2rem;
         }
 
         .date {
@@ -120,150 +172,163 @@
         }
 
         .tags {
-            margin-top: 1rem;
+            margin-top: 1.5rem;
             display: flex;
             flex-wrap: wrap;
-            gap: 0.5rem;
+            gap: 0.8rem;
         }
 
         .tag {
             background: #21262d;
-            padding: 0.3rem 0.8rem;
+            padding: 0.4rem 1rem;
             border-radius: 20px;
             font-size: 0.85rem;
             font-family: monospace;
             color: var(--accent-color);
+            border: 1px solid #30363d;
         }
 
         ul {
             padding-left: 1.2rem;
-            color: var(--text-main);
+            color: var(--text-muted);
         }
 
         li {
+            margin-bottom: 0.8rem;
+        }
+
+        p {
+            color: var(--text-muted);
             margin-bottom: 0.5rem;
         }
 
-        /* Scroll Animation Classes */
+        .about-text {
+            font-size: 1.1rem;
+            max-width: 900px;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        /* Scroll Animations */
         .hidden {
             opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s ease-out;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
         }
 
         .show {
             opacity: 1;
             transform: translateY(0);
         }
-
-        .about-text {
-            font-size: 1.1rem;
-            max-width: 800px;
-        }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1 class="hidden">Tanmay Mare [cite: 1]</h1>
+    <nav>
+        <a href="#" class="nav-brand">TM.</a>
+        <ul class="nav-links">
+            <li><a href="#about">About</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#education">Education</a></li>
+        </ul>
+    </nav>
+
+    <header id="home">
+        <h1 class="hidden">Tanmay Mare</h1>
         <div class="subtitle hidden" id="typewriter"></div>
         <div class="contact-links hidden">
-            <a href="mailto:tanmaymare18@gmail.com">tanmaymare18@gmail.com [cite: 2]</a>
-            <a href="tel:9823519637">9823519637 [cite: 2]</a>
-            <a href="https://linkedin.com/in/tanmay-mare-fpga/" target="_blank">LinkedIn [cite: 3]</a>
-            <span>Pune, India [cite: 5]</span>
+            <a href="mailto:tanmaymare18@gmail.com">tanmaymare18@gmail.com</a>
+            <a href="tel:9823519637">9823519637</a>
+            <a href="https://linkedin.com/in/tanmay-mare-fpga/" target="_blank">LinkedIn</a>
+            <span>Pune, India</span>
         </div>
     </header>
 
     <section id="about" class="hidden">
-        <h2 class="section-title"><span>/</span> PROFILE SUMMARY [cite: 4]</h2>
+        <h2 class="section-title"><span>/</span> PROFILE</h2>
         <p class="about-text">
-            Hardware-focused E&TC Engineering student (Class of 2026) specializing in RTL design, hardware acceleration, and mixed-signal integration. [cite: 6] Proven ability to take Verilog designs from simulation to physical synthesis on Artix-7 FPGAs, achieving latency (-25us). [cite: 7] Actively transitioning to System Verilog and Zynq SoC integration, seeking early-career roles in Digital Design and FPGA prototyping. [cite: 8] When I'm not running full system timing analysis, I'm highly active in endurance sports, hitting the pavement six days a week training to run complete marathons.
+            Hardware-focused E&TC Engineering student (Class of 2026) specializing in RTL design, hardware acceleration, and mixed-signal integration. Proven ability to take Verilog designs from simulation to physical synthesis on Artix-7 FPGAs, achieving latency of -25us. Actively transitioning to System Verilog and Zynq SoC integration, seeking early-career roles in Digital Design and FPGA prototyping. When I am not running full system timing analysis, I am highly active in endurance sports, training six days a week to eventually run full marathons.
         </p>
     </section>
 
-    <section id="education" class="hidden">
-        <h2 class="section-title"><span>/</span> EDUCATION [cite: 9]</h2>
-        <div class="card">
-            <h3>Bachelor of Engineering [cite: 10]</h3>
-            <span class="date">Class of 2026 [cite: 16]</span>
-            <p>Pune Vidyarthi Griha's College of Engineering, Technology & Management. [cite: 11]</p>
-            <p>Specialization: Electronics & Telecommunication [cite: 11]</p>
-        </div>
-    </section>
-
     <section id="skills" class="hidden">
-        <h2 class="section-title"><span>/</span> SKILLS [cite: 12]</h2>
+        <h2 class="section-title"><span>/</span> SKILLS & TOOLS</h2>
         <div class="grid">
             <div class="card">
-                <h3>VLSI & Hardware Design [cite: 13]</h3>
-                <p>RTL design (Verilog & VHDL), FPGA Implementation, test bench, Verification, Mixed-Signal Integration. [cite: 13]</p>
+                <h3>VLSI & Hardware Design</h3>
+                <p>RTL design (Verilog & VHDL), FPGA Implementation, Test Bench, Verification, Mixed-Signal Integration.</p>
             </div>
             <div class="card">
-                <h3>EDA & Simulation Tools [cite: 14]</h3>
-                <p>Xilinx Vivado, Icarus Verilog, GTKWave. [cite: 14]</p>
+                <h3>EDA & Simulation Tools</h3>
+                <p>Xilinx Vivado, Icarus Verilog, GTKWave.</p>
             </div>
             <div class="card">
-                <h3>Hardware & Microcontrollers [cite: 15]</h3>
-                <p>Basys 3 (Artix-7), AD8232 ECG Sensor, ADC MCP3008, STM32, ARM 7, ESP8266. [cite: 15]</p>
+                <h3>Hardware & Microcontrollers</h3>
+                <p>Basys 3 (Artix-7), AD8232 ECG Sensor, ADC MCP3008, STM32, ARM 7, ESP8266.</p>
             </div>
             <div class="card">
-                <h3>Software & Embedded [cite: 17]</h3>
-                <p>STM32CubeIDE, Keil µVision, Arduino IDE, Git/GitHub. [cite: 17]</p>
-                <p><strong>Protocols:</strong> UART, I2C, SPI, GPIO [cite: 17]</p>
+                <h3>Software & Protocols</h3>
+                <p>STM32CubeIDE, Keil µVision, Arduino IDE, Git/GitHub.</p>
+                <p><strong>Protocols:</strong> UART, I2C, SPI, GPIO.</p>
             </div>
         </div>
     </section>
 
     <section id="projects" class="hidden">
-        <h2 class="section-title"><span>/</span> PROJECTS [cite: 18]</h2>
+        <h2 class="section-title"><span>/</span> PROJECTS</h2>
         <div class="grid">
             <div class="card">
-                <h3>FPGA-Based Real-Time Fault Detection and Protection System for Power Grid Applications [cite: 19]</h3>
-                <span class="date">07/2025-Present [cite: 20]</span>
+                <h3>FPGA-Based Real-Time Fault Detection System</h3>
+                <span class="date">07/2025 - Present</span>
                 <ul>
-                    <li>Engineering an open-source real-time fault detection module and protection mechanism using Verilog HDL. [cite: 21]</li>
-                    <li>Designed the core logic using Finite State Machines (FSM) and successfully interfaced Basys 3 FPGA peripherals, including an LCD module and an MCP3008 ADC. [cite: 22]</li>
-                    <li>Debugged RTL via comprehensive module simulations, completing full system timing analysis to achieve processing latency time of -25 microseconds (us). [cite: 23]</li>
+                    <li>Engineering an open-source real-time fault detection module and protection mechanism for power grids using Verilog HDL.</li>
+                    <li>Designed core logic using Finite State Machines (FSM) and interfaced Basys 3 FPGA peripherals, including an LCD module and MCP3008 ADC.</li>
+                    <li>Debugged RTL via comprehensive simulations, completing full system timing analysis to achieve a processing latency of ~25us.</li>
                 </ul>
             </div>
 
             <div class="card">
-                <h3>Digital IP Library Development & Hardware Verification [cite: 24]</h3>
-                <span class="date">07/2025-Present [cite: 25]</span>
+                <h3>Digital IP Library Development</h3>
+                <span class="date">07/2025 - Present</span>
                 <ul>
-                    <li>Self-directed, personal project. [cite: 26]</li>
-                    <li>Designed and synthesized foundational digital IPs (Basic Logic gates, counters, Adders, MUXes, FSMs) in Verilog targeting the Artix-7 architecture. [cite: 27]</li>
-                    <li>Developed comprehensive test benches for functional verification; documented simulation waveforms and RTL elaboration schematics in a public GitHub repository. [cite: 28, 29]</li>
+                    <li>Designed and synthesized foundational digital IPs (logic gates, counters, adders, MUXes, FSMs) in Verilog for the Artix-7 architecture.</li>
+                    <li>Developed comprehensive test benches for functional verification.</li>
+                    <li>Documented simulation waveforms and RTL elaboration schematics in a public GitHub repository.</li>
                 </ul>
             </div>
 
             <div class="card">
-                <h3>Diagnostic tool for detecting of Bipolar Disorder [cite: 30]</h3>
-                <span class="date">10/2023-07/2024 [cite: 31]</span>
+                <h3>Bipolar Disorder Diagnostic Tool Prototype</h3>
+                <span class="date">10/2023 - 07/2024</span>
                 <ul>
-                    <li>Designed a mixed-signal data acquisition prototype by interfacing an AD8232 analog ECG sensor with an ESP8266 microcontroller to capture real-time physiological data. [cite: 32]</li>
-                    <li>Processed raw analog sensor inputs into digital metrics to isolate Heart Rate Variability (HRV), demonstrating end-to-end system integration and signal processing capabilities. [cite: 33, 34]</li>
+                    <li>Designed a mixed-signal data acquisition prototype by interfacing an AD8232 analog ECG sensor with an ESP8266 microcontroller.</li>
+                    <li>Processed raw analog sensor inputs into digital metrics to isolate Heart Rate Variability (HRV), demonstrating end-to-end signal processing capabilities.</li>
                 </ul>
             </div>
         </div>
     </section>
 
-    <section id="certifications" class="hidden" style="margin-bottom: 5rem;">
-        <h2 class="section-title"><span>/</span> CERTIFICATIONS [cite: 35]</h2>
+    <section id="education" class="hidden" style="margin-bottom: 5rem;">
+        <h2 class="section-title"><span>/</span> EDUCATION & CERTS</h2>
+        <div class="card" style="margin-bottom: 2rem;">
+            <h3>Bachelor of Engineering (E&TC)</h3>
+            <span class="date">Class of 2026</span>
+            <p>Pune Vidyarthi Griha's College of Engineering, Technology & Management.</p>
+        </div>
         <div class="tags">
-            <span class="tag">System Design Through Verilog (NPTEL) [cite: 36]</span>
-            <span class="tag">Hardware Modelling using Verilog (NPTEL) [cite: 36]</span>
-            <span class="tag">Verilog HDL (Udemy) [cite: 36]</span>
-            <span class="tag">CMOS Digital VLSI Design (NPTEL) [cite: 36]</span>
+            <span class="tag">NPTEL: System Design Through Verilog</span>
+            <span class="tag">NPTEL: Hardware Modelling using Verilog</span>
+            <span class="tag">NPTEL: CMOS Digital VLSI Design</span>
+            <span class="tag">Udemy: Verilog HDL</span>
         </div>
     </section>
 
     <script>
-        // Subtitle Typewriter Effect
-        const text = "> Hardware-focused E&TC Engineering student | RTL | FPGA | Mixed-Signal";
+        // Typewriter Effect
+        const text = "> Hardware-focused E&TC Engineer | RTL | FPGA | Mixed-Signal";
         let index = 0;
-        const speed = 50;
+        const speed = 40;
         
         function typeWriter() {
             if (index < text.length) {
@@ -273,14 +338,13 @@
             }
         }
         
-        // Start typing effect immediately
-        setTimeout(typeWriter, 500);
+        setTimeout(typeWriter, 400);
 
-        // Intersection Observer for scroll animations
+        // Scroll Observer for Fade-in Animations
         const observerOptions = {
             root: null,
             rootMargin: '0px',
-            threshold: 0.1
+            threshold: 0.15
         };
 
         const observer = new IntersectionObserver((entries, observer) => {
