@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tanmay Mare | Hardware & FPGA Portfolio</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --surface-color: #161b22;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+            --accent-color: #00f0ff;
+            --accent-glow: rgba(0, 240, 255, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        header {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            background: radial-gradient(circle at center, var(--surface-color) 0%, var(--bg-color) 100%);
+        }
+
+        h1 {
+            font-size: 4rem;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            font-family: monospace;
+            margin-bottom: 2rem;
+        }
+
+        .contact-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin: 0 1rem;
+            transition: color 0.3s;
+            border-bottom: 1px dashed transparent;
+        }
+
+        .contact-links a:hover {
+            color: var(--accent-color);
+            border-bottom: 1px dashed var(--accent-color);
+        }
+
+        section {
+            padding: 5rem 10%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #ffffff;
+            border-bottom: 2px solid var(--surface-color);
+            padding-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .section-title span {
+            color: var(--accent-color);
+        }
+
+        /* Card Layouts */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background-color: var(--surface-color);
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px var(--accent-glow);
+            border-color: var(--accent-color);
+        }
+
+        .card h3 {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        .date {
+            font-family: monospace;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .tags {
+            margin-top: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            background: #21262d;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-family: monospace;
+            color: var(--accent-color);
+        }
+
+        ul {
+            padding-left: 1.2rem;
+            color: var(--text-main);
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Scroll Animation Classes */
+        .hidden {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        .show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .about-text {
+            font-size: 1.1rem;
+            max-width: 800px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 class="hidden">Tanmay Mare [cite: 1]</h1>
+        <div class="subtitle hidden" id="typewriter"></div>
+        <div class="contact-links hidden">
+            <a href="mailto:tanmaymare18@gmail.com">tanmaymare18@gmail.com [cite: 2]</a>
+            <a href="tel:9823519637">9823519637 [cite: 2]</a>
+            <a href="https://linkedin.com/in/tanmay-mare-fpga/" target="_blank">LinkedIn [cite: 3]</a>
+            <span>Pune, India [cite: 5]</span>
+        </div>
+    </header>
+
+    <section id="about" class="hidden">
+        <h2 class="section-title"><span>/</span> PROFILE SUMMARY [cite: 4]</h2>
+        <p class="about-text">
+            Hardware-focused E&TC Engineering student (Class of 2026) specializing in RTL design, hardware acceleration, and mixed-signal integration. [cite: 6] Proven ability to take Verilog designs from simulation to physical synthesis on Artix-7 FPGAs, achieving latency (-25us). [cite: 7] Actively transitioning to System Verilog and Zynq SoC integration, seeking early-career roles in Digital Design and FPGA prototyping. [cite: 8] When I'm not running full system timing analysis, I'm highly active in endurance sports, hitting the pavement six days a week training to run complete marathons.
+        </p>
+    </section>
+
+    <section id="education" class="hidden">
+        <h2 class="section-title"><span>/</span> EDUCATION [cite: 9]</h2>
+        <div class="card">
+            <h3>Bachelor of Engineering [cite: 10]</h3>
+            <span class="date">Class of 2026 [cite: 16]</span>
+            <p>Pune Vidyarthi Griha's College of Engineering, Technology & Management. [cite: 11]</p>
+            <p>Specialization: Electronics & Telecommunication [cite: 11]</p>
+        </div>
+    </section>
+
+    <section id="skills" class="hidden">
+        <h2 class="section-title"><span>/</span> SKILLS [cite: 12]</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>VLSI & Hardware Design [cite: 13]</h3>
+                <p>RTL design (Verilog & VHDL), FPGA Implementation, test bench, Verification, Mixed-Signal Integration. [cite: 13]</p>
+            </div>
+            <div class="card">
+                <h3>EDA & Simulation Tools [cite: 14]</h3>
+                <p>Xilinx Vivado, Icarus Verilog, GTKWave. [cite: 14]</p>
+            </div>
+            <div class="card">
+                <h3>Hardware & Microcontrollers [cite: 15]</h3>
+                <p>Basys 3 (Artix-7), AD8232 ECG Sensor, ADC MCP3008, STM32, ARM 7, ESP8266. [cite: 15]</p>
+            </div>
+            <div class="card">
+                <h3>Software & Embedded [cite: 17]</h3>
+                <p>STM32CubeIDE, Keil µVision, Arduino IDE, Git/GitHub. [cite: 17]</p>
+                <p><strong>Protocols:</strong> UART, I2C, SPI, GPIO [cite: 17]</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="hidden">
+        <h2 class="section-title"><span>/</span> PROJECTS [cite: 18]</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>FPGA-Based Real-Time Fault Detection and Protection System for Power Grid Applications [cite: 19]</h3>
+                <span class="date">07/2025-Present [cite: 20]</span>
+                <ul>
+                    <li>Engineering an open-source real-time fault detection module and protection mechanism using Verilog HDL. [cite: 21]</li>
+                    <li>Designed the core logic using Finite State Machines (FSM) and successfully interfaced Basys 3 FPGA peripherals, including an LCD module and an MCP3008 ADC. [cite: 22]</li>
+                    <li>Debugged RTL via comprehensive module simulations, completing full system timing analysis to achieve processing latency time of -25 microseconds (us). [cite: 23]</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Digital IP Library Development & Hardware Verification [cite: 24]</h3>
+                <span class="date">07/2025-Present [cite: 25]</span>
+                <ul>
+                    <li>Self-directed, personal project. [cite: 26]</li>
+                    <li>Designed and synthesized foundational digital IPs (Basic Logic gates, counters, Adders, MUXes, FSMs) in Verilog targeting the Artix-7 architecture. [cite: 27]</li>
+                    <li>Developed comprehensive test benches for functional verification; documented simulation waveforms and RTL elaboration schematics in a public GitHub repository. [cite: 28, 29]</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Diagnostic tool for detecting of Bipolar Disorder [cite: 30]</h3>
+                <span class="date">10/2023-07/2024 [cite: 31]</span>
+                <ul>
+                    <li>Designed a mixed-signal data acquisition prototype by interfacing an AD8232 analog ECG sensor with an ESP8266 microcontroller to capture real-time physiological data. [cite: 32]</li>
+                    <li>Processed raw analog sensor inputs into digital metrics to isolate Heart Rate Variability (HRV), demonstrating end-to-end system integration and signal processing capabilities. [cite: 33, 34]</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="certifications" class="hidden" style="margin-bottom: 5rem;">
+        <h2 class="section-title"><span>/</span> CERTIFICATIONS [cite: 35]</h2>
+        <div class="tags">
+            <span class="tag">System Design Through Verilog (NPTEL) [cite: 36]</span>
+            <span class="tag">Hardware Modelling using Verilog (NPTEL) [cite: 36]</span>
+            <span class="tag">Verilog HDL (Udemy) [cite: 36]</span>
+            <span class="tag">CMOS Digital VLSI Design (NPTEL) [cite: 36]</span>
+        </div>
+    </section>
+
+    <script>
+        // Subtitle Typewriter Effect
+        const text = "> Hardware-focused E&TC Engineering student | RTL | FPGA | Mixed-Signal";
+        let index = 0;
+        const speed = 50;
+        
+        function typeWriter() {
+            if (index < text.length) {
+                document.getElementById("typewriter").innerHTML += text.charAt(index);
+                index++;
+                setTimeout(typeWriter, speed);
+            }
+        }
+        
+        // Start typing effect immediately
+        setTimeout(typeWriter, 500);
+
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('show');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.hidden').forEach((element) => {
+            observer.observe(element);
+        });
+    </script>
+</body>
+</html>
