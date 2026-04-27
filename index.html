@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tanmay Mare | Hardware & FPGA Portfolio</title>
+    <title>Tanmay Mare | FPGA & RTL Design</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -12,6 +12,7 @@
             --text-muted: #8b949e;
             --accent-color: #00f0ff;
             --accent-glow: rgba(0, 240, 255, 0.15);
+            --waveform-color: rgba(0, 240, 255, 0.3);
         }
 
         * {
@@ -21,9 +22,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
+        html { scroll-behavior: smooth; }
 
         body {
             background-color: var(--bg-color);
@@ -32,13 +31,13 @@
             overflow-x: hidden;
         }
 
-        /* Navigation Bar */
+        /* Navigation */
         nav {
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(22, 27, 34, 0.95);
-            backdrop-filter: blur(8px);
+            background: rgba(13, 17, 23, 0.85);
+            backdrop-filter: blur(10px);
             z-index: 1000;
             display: flex;
             justify-content: space-between;
@@ -70,12 +69,11 @@
             letter-spacing: 1px;
         }
 
-        .nav-links a:hover {
-            color: var(--accent-color);
-        }
+        .nav-links a:hover { color: var(--accent-color); }
 
-        /* Hero Section */
+        /* Hero Section with Canvas */
         header {
+            position: relative;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -83,15 +81,26 @@
             align-items: center;
             text-align: center;
             padding: 2rem;
-            background: radial-gradient(circle at center, var(--surface-color) 0%, var(--bg-color) 100%);
-            margin-top: 60px; /* Offset for navbar */
+            margin-top: 60px;
+            overflow: hidden;
+        }
+
+        #waveformCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.6;
         }
 
         h1 {
-            font-size: 4rem;
+            font-size: 4.5rem;
             color: #ffffff;
             margin-bottom: 0.5rem;
             letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
         }
 
         .subtitle {
@@ -99,28 +108,38 @@
             color: var(--accent-color);
             font-family: monospace;
             margin-bottom: 2rem;
-            min-height: 1.5em; /* Prevents layout shift while typing */
+            min-height: 1.5em;
+            background: rgba(13, 17, 23, 0.7);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        .contact-links {
+            background: rgba(13, 17, 23, 0.7);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #30363d;
         }
 
         .contact-links a {
             color: var(--text-muted);
             text-decoration: none;
             margin: 0 1rem;
-            transition: color 0.3s;
-            border-bottom: 1px dashed transparent;
+            transition: all 0.3s;
+            font-family: monospace;
         }
 
         .contact-links a:hover {
             color: var(--accent-color);
-            border-bottom: 1px dashed var(--accent-color);
+            text-shadow: 0 0 8px var(--accent-color);
         }
 
-        /* Main Sections */
+        /* General Sections */
         section {
             padding: 5rem 5%;
             max-width: 1200px;
             margin: 0 auto;
-            scroll-margin-top: 80px; /* Prevents nav from covering titles */
+            scroll-margin-top: 80px;
         }
 
         .section-title {
@@ -132,45 +151,73 @@
             display: inline-block;
         }
 
-        .section-title span {
-            color: var(--accent-color);
+        .section-title span { color: var(--accent-color); }
+
+        .about-text {
+            font-size: 1.1rem;
+            max-width: 900px;
+            line-height: 1.8;
+            color: var(--text-muted);
         }
 
-        /* Card Layouts */
+        /* Grid & Cards */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 2rem;
         }
 
         .card {
             background-color: var(--surface-color);
-            padding: 2rem;
+            padding: 2.5rem;
             border-radius: 8px;
             border: 1px solid #30363d;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: var(--accent-color);
+            transition: all 0.4s ease;
         }
 
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 24px var(--accent-glow);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
             border-color: #484f58;
         }
 
+        .card:hover::before { left: 0; }
+
         .card h3 {
-            color: var(--accent-color);
-            margin-bottom: 1rem;
-            font-size: 1.2rem;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
         }
 
         .date {
             font-family: monospace;
-            color: var(--text-muted);
+            color: var(--accent-color);
             font-size: 0.9rem;
             display: block;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
 
+        ul {
+            padding-left: 1.2rem;
+            color: var(--text-muted);
+        }
+
+        li { margin-bottom: 0.8rem; }
+
+        /* Interactive Tags */
         .tags {
             margin-top: 1.5rem;
             display: flex;
@@ -180,36 +227,24 @@
 
         .tag {
             background: #21262d;
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
             font-size: 0.85rem;
             font-family: monospace;
             color: var(--accent-color);
             border: 1px solid #30363d;
+            cursor: pointer;
+            transition: background 0.3s;
+            min-width: 120px;
+            text-align: center;
         }
 
-        ul {
-            padding-left: 1.2rem;
-            color: var(--text-muted);
+        .tag:hover {
+            background: rgba(0, 240, 255, 0.1);
+            border-color: var(--accent-color);
         }
 
-        li {
-            margin-bottom: 0.8rem;
-        }
-
-        p {
-            color: var(--text-muted);
-            margin-bottom: 0.5rem;
-        }
-
-        .about-text {
-            font-size: 1.1rem;
-            max-width: 900px;
-            line-height: 1.8;
-            color: var(--text-muted);
-        }
-
-        /* Scroll Animations */
+        /* Utilities */
         .hidden {
             opacity: 0;
             transform: translateY(20px);
@@ -225,7 +260,7 @@
 <body>
 
     <nav>
-        <a href="#" class="nav-brand">TM.</a>
+        <a href="#" class="nav-brand">TM_RTL</a>
         <ul class="nav-links">
             <li><a href="#about">About</a></li>
             <li><a href="#skills">Skills</a></li>
@@ -235,43 +270,36 @@
     </nav>
 
     <header id="home">
+        <canvas id="waveformCanvas"></canvas>
         <h1 class="hidden">Tanmay Mare</h1>
         <div class="subtitle hidden" id="typewriter"></div>
         <div class="contact-links hidden">
             <a href="mailto:tanmaymare18@gmail.com">tanmaymare18@gmail.com</a>
-            <a href="tel:9823519637">9823519637</a>
             <a href="https://linkedin.com/in/tanmay-mare-fpga/" target="_blank">LinkedIn</a>
-            <span>Pune, India</span>
+            <a href="https://github.com/tanmaymare" target="_blank">GitHub</a>
+            <span>Pune, IN</span>
         </div>
     </header>
 
     <section id="about" class="hidden">
         <h2 class="section-title"><span>/</span> PROFILE</h2>
         <p class="about-text">
-            Hardware-focused E&TC Engineering student (Class of 2026) specializing in RTL design, hardware acceleration, and mixed-signal integration. Proven ability to take Verilog designs from simulation to physical synthesis on Artix-7 FPGAs, achieving latency of -25us. Actively transitioning to System Verilog and Zynq SoC integration, seeking early-career roles in Digital Design and FPGA prototyping. When I am not running full system timing analysis, I am highly active in endurance sports, training six days a week to eventually run full marathons.
+            Hardware-focused E&TC Engineering student specializing in RTL design, hardware acceleration, and mixed-signal integration. Proven ability to take Verilog designs from simulation to physical synthesis on Artix-7 FPGAs, achieving highly optimized processing latencies. Actively transitioning to System Verilog and Zynq SoC integration, seeking early-career roles in Digital Design and FPGA prototyping. When I am not running full system timing analysis, I am highly active in endurance sports, training six days a week to eventually run full marathons.
         </p>
     </section>
 
     <section id="skills" class="hidden">
         <h2 class="section-title"><span>/</span> SKILLS & TOOLS</h2>
-        <div class="grid">
-            <div class="card">
-                <h3>VLSI & Hardware Design</h3>
-                <p>RTL design (Verilog & VHDL), FPGA Implementation, Test Bench, Verification, Mixed-Signal Integration.</p>
-            </div>
-            <div class="card">
-                <h3>EDA & Simulation Tools</h3>
-                <p>Xilinx Vivado, Icarus Verilog, GTKWave.</p>
-            </div>
-            <div class="card">
-                <h3>Hardware & Microcontrollers</h3>
-                <p>Basys 3 (Artix-7), AD8232 ECG Sensor, ADC MCP3008, STM32, ARM 7, ESP8266.</p>
-            </div>
-            <div class="card">
-                <h3>Software & Protocols</h3>
-                <p>STM32CubeIDE, Keil µVision, Arduino IDE, Git/GitHub.</p>
-                <p><strong>Protocols:</strong> UART, I2C, SPI, GPIO.</p>
-            </div>
+        <div class="tags" id="skillTags">
+            <span class="tag" data-text="Verilog & VHDL">Verilog & VHDL</span>
+            <span class="tag" data-text="FPGA Implementation">FPGA Implementation</span>
+            <span class="tag" data-text="Mixed-Signal">Mixed-Signal</span>
+            <span class="tag" data-text="Xilinx Vivado">Xilinx Vivado</span>
+            <span class="tag" data-text="Icarus Verilog">Icarus Verilog</span>
+            <span class="tag" data-text="GTKWave">GTKWave</span>
+            <span class="tag" data-text="Basys 3 (Artix-7)">Basys 3 (Artix-7)</span>
+            <span class="tag" data-text="STM32 & ARM 7">STM32 & ARM 7</span>
+            <span class="tag" data-text="I2C / SPI / UART">I2C / SPI / UART</span>
         </div>
     </section>
 
@@ -279,11 +307,11 @@
         <h2 class="section-title"><span>/</span> PROJECTS</h2>
         <div class="grid">
             <div class="card">
-                <h3>FPGA-Based Real-Time Fault Detection System</h3>
+                <h3>FPGA Real-Time Fault Detection System</h3>
                 <span class="date">07/2025 - Present</span>
                 <ul>
                     <li>Engineering an open-source real-time fault detection module and protection mechanism for power grids using Verilog HDL.</li>
-                    <li>Designed core logic using Finite State Machines (FSM) and interfaced Basys 3 FPGA peripherals, including an LCD module and MCP3008 ADC.</li>
+                    <li>Designed core logic using FSMs and interfaced Basys 3 FPGA peripherals, including an LCD module and MCP3008 ADC.</li>
                     <li>Debugged RTL via comprehensive simulations, completing full system timing analysis to achieve a processing latency of ~25us.</li>
                 </ul>
             </div>
@@ -294,7 +322,7 @@
                 <ul>
                     <li>Designed and synthesized foundational digital IPs (logic gates, counters, adders, MUXes, FSMs) in Verilog for the Artix-7 architecture.</li>
                     <li>Developed comprehensive test benches for functional verification.</li>
-                    <li>Documented simulation waveforms and RTL elaboration schematics in a public GitHub repository.</li>
+                    <li>Documented simulation waveforms and RTL elaboration schematics.</li>
                 </ul>
             </div>
 
@@ -302,8 +330,8 @@
                 <h3>Bipolar Disorder Diagnostic Tool Prototype</h3>
                 <span class="date">10/2023 - 07/2024</span>
                 <ul>
-                    <li>Designed a mixed-signal data acquisition prototype by interfacing an AD8232 analog ECG sensor with an ESP8266 microcontroller.</li>
-                    <li>Processed raw analog sensor inputs into digital metrics to isolate Heart Rate Variability (HRV), demonstrating end-to-end signal processing capabilities.</li>
+                    <li>Designed a mixed-signal data acquisition prototype interfacing an AD8232 analog ECG sensor with an ESP8266 microcontroller.</li>
+                    <li>Processed raw analog sensor inputs into digital metrics to isolate Heart Rate Variability (HRV).</li>
                 </ul>
             </div>
         </div>
@@ -314,39 +342,32 @@
         <div class="card" style="margin-bottom: 2rem;">
             <h3>Bachelor of Engineering (E&TC)</h3>
             <span class="date">Class of 2026</span>
-            <p>Pune Vidyarthi Griha's College of Engineering, Technology & Management.</p>
+            <p style="color: var(--text-muted)">Pune Vidyarthi Griha's College of Engineering, Technology & Management.</p>
         </div>
-        <div class="tags">
-            <span class="tag">NPTEL: System Design Through Verilog</span>
-            <span class="tag">NPTEL: Hardware Modelling using Verilog</span>
-            <span class="tag">NPTEL: CMOS Digital VLSI Design</span>
-            <span class="tag">Udemy: Verilog HDL</span>
+        <div class="tags" id="certTags">
+            <span class="tag" data-text="NPTEL: System Design Through Verilog">NPTEL: System Design Through Verilog</span>
+            <span class="tag" data-text="NPTEL: Hardware Modelling">NPTEL: Hardware Modelling</span>
+            <span class="tag" data-text="NPTEL: CMOS Digital VLSI">NPTEL: CMOS Digital VLSI</span>
+            <span class="tag" data-text="Udemy: Verilog HDL">Udemy: Verilog HDL</span>
         </div>
     </section>
 
     <script>
-        // Typewriter Effect
-        const text = "> Hardware-focused E&TC Engineer | RTL | FPGA | Mixed-Signal";
+        // 1. Terminal Typewriter Effect
+        const text = "> ./run_simulation -target Artix7 -module Tanmay_Mare";
         let index = 0;
-        const speed = 40;
         
         function typeWriter() {
             if (index < text.length) {
                 document.getElementById("typewriter").innerHTML += text.charAt(index);
                 index++;
-                setTimeout(typeWriter, speed);
+                setTimeout(typeWriter, 50);
             }
         }
-        
-        setTimeout(typeWriter, 400);
+        setTimeout(typeWriter, 800);
 
-        // Scroll Observer for Fade-in Animations
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.15
-        };
-
+        // 2. Scroll Animations
+        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.15 };
         const observer = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -355,10 +376,102 @@
                 }
             });
         }, observerOptions);
+        document.querySelectorAll('.hidden').forEach((el) => observer.observe(el));
 
-        document.querySelectorAll('.hidden').forEach((element) => {
-            observer.observe(element);
+        // 3. Binary Decrypt Hover Effect for Tags
+        const letters = "01";
+        document.querySelectorAll('.tag').forEach(tag => {
+            tag.addEventListener('mouseover', event => {
+                let iterations = 0;
+                const originalText = event.target.dataset.text;
+                
+                clearInterval(tag.interval);
+                
+                tag.interval = setInterval(() => {
+                    event.target.innerText = originalText.split("")
+                        .map((letter, index) => {
+                            if(index < iterations) {
+                                return originalText[index];
+                            }
+                            return letters[Math.floor(Math.random() * 2)];
+                        })
+                        .join("");
+                    
+                    if(iterations >= originalText.length){ 
+                        clearInterval(tag.interval);
+                    }
+                    iterations += 1 / 3; 
+                }, 30);
+            });
         });
+
+        // 4. RTL Waveform Canvas Background
+        const canvas = document.getElementById('waveformCanvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        let offset = 0;
+        
+        function drawWaveform() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(0, 240, 255, 0.15)';
+            ctx.lineWidth = 2;
+
+            const yCenter = height / 2;
+            const amplitude = 50;
+            const period = 200;
+
+            // Draw a digital clock signal
+            for (let x = 0; x < width; x += 5) {
+                // Calculate square wave
+                let val = Math.sin((x + offset) * (Math.PI * 2) / period);
+                let y = val > 0 ? yCenter - amplitude : yCenter + amplitude;
+                
+                if (x === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    // Draw vertical transition lines for square wave
+                    let prevVal = Math.sin((x - 5 + offset) * (Math.PI * 2) / period);
+                    if ((val > 0 && prevVal <= 0) || (val <= 0 && prevVal > 0)) {
+                         ctx.lineTo(x, yCenter - amplitude);
+                         ctx.lineTo(x, yCenter + amplitude);
+                    }
+                    ctx.lineTo(x, y);
+                }
+            }
+            
+            ctx.stroke();
+            
+            // Draw a second, faster data signal line
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(0, 240, 255, 0.08)';
+            for (let x = 0; x < width; x += 5) {
+                let val = Math.sin((x + offset * 1.5) * (Math.PI * 2) / (period * 0.7));
+                let y = val > 0.2 ? yCenter + 100 : yCenter + 150; // Offset below main clock
+                if (x === 0) ctx.moveTo(x, y);
+                else {
+                    let prevVal = Math.sin((x - 5 + offset * 1.5) * (Math.PI * 2) / (period * 0.7));
+                    if ((val > 0.2 && prevVal <= 0.2) || (val <= 0.2 && prevVal > 0.2)) {
+                        ctx.lineTo(x, yCenter + 100);
+                        ctx.lineTo(x, yCenter + 150);
+                    }
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+
+            offset += 2;
+            requestAnimationFrame(drawWaveform);
+        }
+        
+        drawWaveform();
     </script>
 </body>
 </html>
